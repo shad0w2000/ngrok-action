@@ -48,3 +48,11 @@ jobs:
           Write-Host "RDP CONNECTION:"
           Write-Host $tunnel.tunnels[0].public_url
           Write-Host "================================"
+
+      - name: Keep runner alive
+        shell: powershell
+        run: |
+          Write-Host "RDP is running..."
+          while ($true) {
+            Start-Sleep -Seconds 300
+          }
