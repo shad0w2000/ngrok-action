@@ -1,6 +1,6 @@
 name: RDP
 
-on: 
+on:
   workflow_dispatch:
 
 jobs:
@@ -42,5 +42,9 @@ jobs:
 
           Start-Sleep -Seconds 5
 
-          Write-Host "Ngrok Tunnel:"
-          Invoke-RestMethod http://127.0.0.1:4040/api/tunnels
+          $tunnel = Invoke-RestMethod http://127.0.0.1:4040/api/tunnels
+
+          Write-Host "================================"
+          Write-Host "RDP CONNECTION:"
+          Write-Host $tunnel.tunnels[0].public_url
+          Write-Host "================================"
