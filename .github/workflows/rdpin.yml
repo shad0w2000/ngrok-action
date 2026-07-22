@@ -1,0 +1,48 @@
+name: Start RDP Session for 80 Days
+
+on:
+  # يمكنك تشغيله يدوياً أو بجدول زمني محدد
+  workflow_dispatch:
+    inputs:
+      duration_days:
+        description: 'Duration in days (default is 80)'
+        required: true
+        default: '80'
+
+jobs:
+  start_rdp:
+    runs-on: ubuntu-latest # أو windows-latest إذا كنت تحتاج بيئة ويندوز حقيقية لـRDP
+
+    steps:
+      - name: Checkout repository (If necessary)
+        uses: actions/checkout@v4
+
+      # 1. تثبيت الأداة المطلوبة للاتصال RDP (إذا كنا على Ubuntu، قد نحتاج أدوات إضافية أو نستخدم script مخصص)
+      # إذا كنت تستخدم windows-latest، يكون الاتصال أسهل غالباً.
+      - name: Install necessary tools (Example for Linux/Ubuntu)
+        run: |
+          sudo apt update
+          sudo apt install -y rdesktop # مثال لأداة RDP على لينكس
+
+      # 2. تحديد مدة التشغيل المطلوبة
+      - name: Calculate Run Time in Seconds
+        id: duration_calc
+        run: |
+          DAYS=${{ github.event.inputs.duration_days || 80 }}
+          SECONDS=$(( DAYS * 24 * 60 * 60 ))
+          echo "total_seconds=$SECONDS" >> $GITHUB_OUTPUT
+
+      # 3. تنفيذ عملية RDP (هنا تكمن الصعوبة الأكبر)
+      - name: Run Long-Lived RDP Connection
+        run: |
+          echo "Starting connection to remote host..."
+          # *** استبدل هذه السطور بالمعلومات الفعلية للـRDP الخاص بك ***
+          REM استخدام rdesktop (مثال على Linux):
+          rdesktop your_server_ip:your_display /user:YourUsername /password:YourPassword
+
+          # إذا كنت تستخدم Windows Runner، فغالباً ستستخدم PowerShell/CMD مع mstsc.exe
+          # مثال لـWindows: Start-Process -FilePath "mstsc.exe" -ArgumentList "ServerName" -Wait 
+        
+      # 4. (اختياري) إضافة خطوة لتتبع المدة إذا كان السكريبت نفسه لا يغلق تلقائياً
+      - name: Report Completion Status
+        run: echo "RDP session process finished."
